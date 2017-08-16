@@ -1,4 +1,5 @@
 var express = require('express')
+// 压缩所需模块
 var compression = require('compression')
 var config = require('./config/index')
 var axios = require('axios')
