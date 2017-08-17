@@ -97,7 +97,7 @@
       </div>
     </transition>
     <playlist ref="playlist"></playlist>
-    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end" @pause="paused"></audio>
   </div>
 </template>
 
@@ -214,25 +214,6 @@
           this.currentLyric.togglePlay()
         }
       },
-      prev() {
-        if (!this.songReady) {
-          return
-        }
-        if (this.playlist.length === 1) {
-          this.loop()
-          return
-        } else {
-          let index = this.currentIndex - 1
-          if (index === -1) {
-            index = this.playlist.length - 1
-          }
-          this.setCurrentIndex(index)
-          if (!this.playing) {
-            this.togglePlaying()
-          }
-        }
-        this.songReady = false
-      },
       end() {
         this.currentTime = 0
         if (this.mode === playMode.loop) {
@@ -268,12 +249,37 @@
         }
         this.songReady = false
       },
+      prev() {
+        if (!this.songReady) {
+          return
+        }
+        if (this.playlist.length === 1) {
+          this.loop()
+          return
+        } else {
+          let index = this.currentIndex - 1
+          if (index === -1) {
+            index = this.playlist.length - 1
+          }
+          this.setCurrentIndex(index)
+          if (!this.playing) {
+            this.togglePlaying()
+          }
+        }
+        this.songReady = false
+      },
       ready() {
         this.songReady = true
         this.savePlayHistory(this.currentSong)
         // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
         if (this.currentLyric && !this.isPureMusic) {
           this.currentLyric.seek(this.currentTime * 1000)
+        }
+      },
+      paused() {
+        this.setPlayingState(false)
+        if (this.currentLyric) {
+          this.currentLyric.stop()
         }
       },
       error() {
@@ -344,6 +350,9 @@
         }
         this.playingLyric = txt
       },
+      showPlaylist() {
+        this.$refs.playlist.show()
+      },
       middleTouchStart(e) {
         this.touch.initiated = true
         // 用来判断是否是一次移动
@@ -404,9 +413,6 @@
         this.$refs.middleL.style.opacity = opacity
         this.$refs.middleL.style[transitionDuration] = `${time}ms`
         this.touch.initiated = false
-      },
-      showPlaylist() {
-        this.$refs.playlist.show()
       },
       _pad(num, n = 2) {
         let len = num.toString().length

@@ -57,6 +57,9 @@
       }
     },
     methods: {
+      refresh() {
+        this.$refs.suggest.refresh()
+      },
       _search() {
         this.page = 1
         this.hasMore = true
@@ -74,23 +77,14 @@
         }
         this.page++
         search(this.query, this.page, this.showSinger, perpage).then((res) => {
-          this.result = this.result.concat(this._genResult(res.data))
-          this._checkMore(res.data)
+          if (res.code === ERR_OK) {
+            this.result = this.result.concat(this._genResult(res.data))
+            this._checkMore(res.data)
+          }
         })
       },
-      getIconCls(item) {
-        if (item.type === TYPE_SINGER) {
-          return 'icon-mine'
-        } else {
-          return 'icon-music'
-        }
-      },
-      getDisplayName(item) {
-        if (item.type === TYPE_SINGER) {
-          return item.singername
-        } else {
-          return `${item.name} - ${item.singer}`
-        }
+      listScroll() {
+        this.$emit('listScroll')
       },
       selectItem(item) {
         if (item.type === TYPE_SINGER) {
@@ -105,18 +99,20 @@
         } else {
           this.insertSong(item)
         }
-        this.$emit('select')
+        this.$emit('select', item)
       },
-      listScroll() {
-        this.$emit('listScroll')
+      getDisplayName(item) {
+        if (item.type === TYPE_SINGER) {
+          return item.singername
+        } else {
+          return `${item.name} - ${item.singer}`
+        }
       },
-      refresh() {
-        this.$refs.suggest.refresh()
-      },
-      _checkMore(data) {
-        const song = data.song
-        if (!song.list.length || (song.cursum + (song.curpage - 1) * perpage) >= song.totalnum || song.totalnum <= perpage) {
-          this.hasMore = false
+      getIconCls(item) {
+        if (item.type === TYPE_SINGER) {
+          return 'icon-mine'
+        } else {
+          return 'icon-music'
         }
       },
       _genResult(data) {
@@ -137,6 +133,12 @@
           }
         })
         return ret
+      },
+      _checkMore(data) {
+        const song = data.song
+        if (!song.list.length || (song.curnum + (song.curpage - 1) * perpage) >= song.totalnum || song.totalnum <= perpage) {
+          this.hasMore = false
+        }
       },
       ...mapMutations({
         setSinger: 'SET_SINGER'

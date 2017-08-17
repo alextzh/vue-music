@@ -5,7 +5,7 @@
       </slot>
     </div>
     <div class="dots">
-      <span class="dot" :class="{active: currentPageIndex === index}" v-for="(item,index) in dots"></span>
+      <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"></span>
     </div>
   </div>
 </template>
@@ -13,6 +13,7 @@
 <script type="text/ecmascript-6">
   import {addClass} from 'common/js/dom'
   import BScroll from 'better-scroll'
+
   export default {
     name: 'slider',
     props: {
@@ -40,10 +41,12 @@
         this._setSliderWidth()
         this._initDots()
         this._initSlider()
+
         if (this.autoPlay) {
           this._play()
         }
       }, 20)
+
       window.addEventListener('resize', () => {
         if (!this.slider || !this.slider.enabled) {
           return
@@ -81,7 +84,7 @@
       clearTimeout(this.timer)
     },
     beforeDestroy() {
-      this.slider.disabled()
+      this.slider.disable()
       clearTimeout(this.timer)
     },
     methods: {
@@ -99,6 +102,7 @@
         for (let i = 0; i < this.children.length; i++) {
           let child = this.children[i]
           addClass(child, 'slider-item')
+
           child.style.width = sliderWidth + 'px'
           width += sliderWidth
         }
@@ -112,17 +116,21 @@
           scrollX: true,
           scrollY: false,
           momentum: false,
-          snap: true,
-          snapLoop: this.loop,
-          snapThreshold: 0.3,
-          snapSpeed: 400
+          snap: {
+            loop: this.loop,
+            threshold: 0.3,
+            speed: 400
+          }
         })
+
         this.slider.on('scrollEnd', this._onScrollEnd)
+
         this.slider.on('touchend', () => {
           if (this.autoPlay) {
             this._play()
           }
         })
+
         this.slider.on('beforeScrollStart', () => {
           if (this.autoPlay) {
             clearTimeout(this.timer)
@@ -156,7 +164,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   .slider
-    min-height:1px
+    min-height: 1px
     .slider-group
       position: relative
       overflow: hidden
@@ -176,8 +184,8 @@
           width: 100%
     .dots
       position: absolute
-      left: 0
       right: 0
+      left: 0
       bottom: 12px
       transform: translateZ(1px)
       text-align: center

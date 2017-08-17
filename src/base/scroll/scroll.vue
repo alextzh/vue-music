@@ -17,7 +17,7 @@
       },
       click: {
         type: Boolean,
-        default: true
+        default: false
       },
       listenScroll: {
         type: Boolean,
@@ -60,9 +60,8 @@
           eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
         })
         if (this.listenScroll) {
-          let me = this
           this.scroll.on('scroll', (pos) => {
-            me.$emit('scroll', pos)
+            this.$emit('scroll', pos)
           })
         }
         if (this.pullup) {

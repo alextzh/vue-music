@@ -207,6 +207,7 @@
       text-align: center
       background: $color-background-d
       font-family: 'Helvetica'
+      z-index: 3
       .item
         padding: 3px
         line-height: 1
