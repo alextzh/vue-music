@@ -12,6 +12,7 @@ var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
 var axios = require('axios')
+var favicon = require('serve-favicon')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -62,6 +63,8 @@ apiRoutes.get('/lyric', (req,res) => {
   })
 })
 app.use('/api',apiRoutes)
+// favicon
+app.use(favicon(__dirname + '/../favicon.ico'))
 
 var compiler = webpack(webpackConfig)
 
