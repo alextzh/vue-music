@@ -3,6 +3,7 @@ var express = require('express')
 var compression = require('compression')
 var config = require('./config/index')
 var axios = require('axios')
+var favicon = require('serve-favicon')
 
 var port = process.env.PORT || config.build.port
 
@@ -53,6 +54,9 @@ app.use('/api', apiRoutes)
 app.use(compression())
 
 app.use(express.static('./dist'))
+
+// favicon
+app.use(favicon(__dirname + '/favicon.ico'))
 
 module.exports = app.listen(port, function (err) {
   if (err) {
