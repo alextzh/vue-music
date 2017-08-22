@@ -55,7 +55,6 @@
     },
     created() {
       this._getRecommend()
-
       this._getDiscList()
     },
     activated() {

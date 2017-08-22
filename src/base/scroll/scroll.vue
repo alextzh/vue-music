@@ -11,6 +11,22 @@
   const DIRECTION_V = 'vertical'
   export default {
     props: {
+      data: {
+        type: Array,
+        default: []
+      },
+      scrollbar: {
+        type: Object,
+        default: null
+      },
+      pullDownRefresh: {
+        type: Object,
+        default: null
+      },
+      pullUpLoad: {
+        type: Object,
+        default: null
+      },
       probeType: {
         type: Number,
         default: 1
@@ -31,10 +47,6 @@
         type: Boolean,
         default: false
       },
-      data: {
-        type: Array,
-        default: null
-      },
       refreshDelay: {
         type: Number,
         default: 20
@@ -54,11 +66,16 @@
         if (!this.$refs.wrapper) {
           return
         }
-        this.scroll = new BScroll(this.$refs.wrapper, {
+        let options = {
           probeType: this.probeType,
           click: this.click,
-          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
-        })
+          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
+          scrollbar: this.scrollbar,
+          scrollbarFade: this.scrollbarFade,
+          pullDownRefresh: this.pullDownRefresh ? {stop: 40} : false,
+          pullUpLoad: this.pullUpLoad
+        }
+        this.scroll = new BScroll(this.$refs.wrapper, options)
         if (this.listenScroll) {
           this.scroll.on('scroll', (pos) => {
             this.$emit('scroll', pos)
@@ -76,6 +93,17 @@
             this.$emit('beforeScroll')
           })
         }
+        if (this.pullDownRefresh) {
+          this.scroll.on('pullingDown', () => {
+            this.$emit('pullingDown')
+          })
+        }
+
+        if (this.pullUpLoad) {
+          this.scroll.on('pullingUp', () => {
+            this.$emit('pullingUp')
+          })
+        }
       },
       enable() {
         this.scroll && this.scroll.enable()
@@ -91,6 +119,12 @@
       },
       scrollToElement() {
         this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+      },
+      finishPullDown() {
+        this.scroll && this.scroll.finishPullDown()
+      },
+      finishPullUp() {
+        this.scroll && this.scroll.finishPullUp()
       }
     },
     watch: {
