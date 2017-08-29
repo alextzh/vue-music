@@ -115,7 +115,6 @@
         } else if (index > this.listHeight.length - 2) {
           index = this.listHeight.length - 2
         }
-        // this.scrollY = -this.listHeight[index]
         this.$refs.listView.scrollToElement(this.$refs.listGroup[index], 0)
         this.scrollY = this.$refs.listView.scroll.y
       },
