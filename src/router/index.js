@@ -14,6 +14,7 @@ const Disc = () => import('components/disc/disc')
 const TopList = () => import('components/top-list/top-list')
 const UserCenter = () => import('components/user-center/user-center')
 const List = () => import('components/list/list')
+const News = () => import('components/news/news')
 
 const router = new Router({
   routes: [
@@ -92,6 +93,13 @@ const router = new Router({
         title: '列表页面'
       },
       component: List
+    },
+    {
+      path: '/news',
+      meta: {
+        title: '每日新闻'
+      },
+      component: News
     }
   ]
 })

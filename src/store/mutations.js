@@ -39,6 +39,18 @@ const mutations = {
   },
   [types.SET_FAVORITE_LIST](state, list) {
     state.favoriteList = list
+  },
+  [types.SET_NAV_LIST](state, list) {
+    state.navList = list
+  },
+  [types.SET_NEWS_LIST](state, list) {
+    state.newsList = list
+  },
+  [types.SET_ACTIVE_INDEX](state, index) {
+    state.activeIndex = index
+  },
+  [types.SET_TAG](state, str) {
+    state.tag = str
   }
 }
 

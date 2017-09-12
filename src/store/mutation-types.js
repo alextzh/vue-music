@@ -24,3 +24,11 @@ export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
 export const SET_PLAY_HISTORY = 'SET_PLAY_HISTORY'
 
 export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'
+
+export const SET_NAV_LIST = 'SET_NAV_LIST'
+
+export const SET_NEWS_LIST = 'SET_NEWS_LIST'
+
+export const SET_ACTIVE_INDEX = 'SET_ACTIVE_INDEX'
+
+export const SET_TAG = 'SET_TAG'

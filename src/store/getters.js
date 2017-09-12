@@ -19,6 +19,13 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = (state) => {
   return state.playlist[state.currentIndex] || {}
 }
+export const navList = state => state.navList
+
+export const newsList = state => state.newsList
+
+export const activeIndex = state => state.activeIndex
+
+export const tag = state => state.tag
 
 export const disc = state => state.disc
 
