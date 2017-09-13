@@ -15,6 +15,7 @@ const TopList = () => import('components/top-list/top-list')
 const UserCenter = () => import('components/user-center/user-center')
 const List = () => import('components/list/list')
 const News = () => import('components/news/news')
+const NewsDetail = () => import('components/news-detail/news-detail')
 
 const router = new Router({
   routes: [
@@ -99,7 +100,16 @@ const router = new Router({
       meta: {
         title: '每日新闻'
       },
-      component: News
+      component: News,
+      children: [
+        {
+          path: ':id',
+          meta: {
+            title: '新闻详情'
+          },
+          component: NewsDetail
+        }
+      ]
     }
   ]
 })

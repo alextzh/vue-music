@@ -13,3 +13,9 @@ export function getNewsList(tag) {
   }
   return jsonp(url, data, {params: 'jsonpCallback'})
 }
+
+export function getNewsDetail (id) {
+  const url = `https://m.toutiao.com/i${id}/info/`
+  const data = {}
+  return jsonp(url, data, {params: 'jsonpCallback'})
+}

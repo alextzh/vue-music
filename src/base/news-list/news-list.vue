@@ -1,7 +1,7 @@
 <template>
   <scroll ref="newsList" class="news-list" :data="newsList">
     <ul>
-      <li v-for="item in newsList" class="item">
+      <li v-for="item in newsList" class="item" @click="selectItem(item)">
         <div class="item-con">
           <div class="item-ver" v-if="!item.middle_mode">
             <h2 class="title" v-html="item.title"></h2>
@@ -20,8 +20,8 @@
             <div class="video-wrapper" v-show="(item.has_video && item.large_mode) || (item.has_video && item.large_mode && item.has_image)">
               <div class="video-img" :style="bgStyle(item)" v-lazy="item.large_image_url"></div>
               <span class="video-icon">
-                <i class="icon-play"></i>
-              </span>
+              <i class="icon-play"></i>
+            </span>
               <span class="video-dur">{{format(item.video_duration)}}</span>
             </div>
             <p class="desc" v-html="getDesc(item)"></p>
@@ -40,8 +40,8 @@
             <div class="mini-video-wrapper" v-show="item.has_video && item.middle_mode">
               <img width="116" height="76" v-lazy="item.image_url" alt="">
               <span class="mini-video-icon">
-              <i class="icon-play-mini"></i>
-            </span>
+            <i class="icon-play-mini"></i>
+          </span>
             </div>
           </div>
         </div>
@@ -50,6 +50,7 @@
     <div class="loading-container" v-show="!newsList.length">
       <loading></loading>
     </div>
+    <router-view></router-view>
   </scroll>
 </template>
 
@@ -74,6 +75,12 @@
       this._getNewsList(this.tag)
     },
     methods: {
+      selectItem(item) {
+        this.setNewsList(item)
+        this.$router.push({
+          path: `/news/${item.group_id}`
+        })
+      },
       refresh() {
         this._getNewsList(this.tag)
       },
@@ -136,6 +143,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
+
   .news-list
     height: 100%
     overflow: hidden

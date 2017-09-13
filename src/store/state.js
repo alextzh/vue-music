@@ -78,7 +78,7 @@ const state = {
       to: 'fashion'
     }
   ],
-  newsList: [],
+  newsList: {},
   activeIndex: 0,
   tag: '__all__'
 }
