@@ -1,32 +1,32 @@
 <template>
-  <scroll ref="newsContent" class="news-content" :data="newsList">
+  <scroll ref="newsList" class="news-list" :data="newsList">
     <ul>
       <li v-for="item in newsList" class="item">
         <div class="item-con">
-          <div class="item-ver" v-show="!item.middle_mode">
+          <div class="item-ver" v-if="!item.middle_mode">
             <h2 class="title" v-html="item.title"></h2>
             <div class="icon" v-show="item.has_image && item.more_mode">
               <img class="multiple-img" v-lazy="img.url" v-for="img in item.image_list">
             </div>
-            <div class="icon" v-show="item.has_image && item.large_mode">
-              <img class="single-img" v-lazy="item.large_image_url">
+            <div class="icon" v-show="item.has_image && item.large_mode && !item.has_video">
+              <img class="single-img" :style="bgStyle(item)" v-lazy="item.large_image_url">
             </div>
             <div class="icon" v-show="item.label_style ===3 && item.more_mode">
               <img class="multiple-img" v-lazy="img.url" v-for="img in item.image_list">
             </div>
             <div class="icon" v-show="item.label_style ===3 && item.large_mode">
-              <img class="single-img" v-lazy="item.large_image_url">
+              <div class="single-img" :style="bgStyle(item)" v-lazy="item.large_image_url"></div>
             </div>
             <div class="video-wrapper" v-show="(item.has_video && item.large_mode) || (item.has_video && item.large_mode && item.has_image)">
-              <img class="video-img" v-lazy="item.large_image_url" alt="">
+              <div class="video-img" :style="bgStyle(item)" v-lazy="item.large_image_url"></div>
               <span class="video-icon">
-                  <i class="icon-play"></i>
-                </span>
+                <i class="icon-play"></i>
+              </span>
               <span class="video-dur">{{format(item.video_duration)}}</span>
             </div>
             <p class="desc" v-html="getDesc(item)"></p>
           </div>
-          <div class="item-hor" v-show="item.middle_mode">
+          <div class="item-hor" v-else>
             <div class="text">
               <h2 class="name" v-html="item.title"></h2>
               <p class="desc" v-html="getDesc(item)"></p>
@@ -40,8 +40,8 @@
             <div class="mini-video-wrapper" v-show="item.has_video && item.middle_mode">
               <img width="116" height="76" v-lazy="item.image_url" alt="">
               <span class="mini-video-icon">
-                <i class="icon-play-mini"></i>
-              </span>
+              <i class="icon-play-mini"></i>
+            </span>
             </div>
           </div>
         </div>
@@ -60,30 +60,33 @@
   import {mapGetters, mapMutations} from 'vuex'
 
   export default {
+    data() {
+      return {
+        newsList: []
+      }
+    },
     computed: {
       ...mapGetters([
-        'newsList',
         'tag'
       ])
     },
-    mounted() {
-      setTimeout(() => {
-        this._getNewsList(this.tag)
-      }, 20)
+    created() {
+      this._getNewsList(this.tag)
     },
     methods: {
       refresh() {
-        setTimeout(() => {
-          this._getNewsList(this.tag)
-        }, 20)
+        this._getNewsList(this.tag)
       },
       _getNewsList(tag) {
         getNewsList(tag).then((res) => {
           if (res.data) {
-            console.log(res.data)
+            this.newsList = res.data
             this.setNewsList(res.data)
           }
         })
+      },
+      bgStyle(item) {
+        return `background-image:url(${item.large_image_url})`
       },
       getDesc(item) {
         if (item.label_style) {
@@ -117,6 +120,13 @@
         setNewsList: 'SET_NEWS_LIST'
       })
     },
+    watch: {
+      data() {
+        setTimeout(() => {
+          this.$refs.newsList.refresh()
+        })
+      }
+    },
     components: {
       Loading,
       Scroll
@@ -126,7 +136,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-  .news-content
+  .news-list
     height: 100%
     overflow: hidden
     .item
@@ -159,20 +169,28 @@
             .multiple-img
               flex: 1
               width: 33%
+              height: 76px
               margin-right: 2px
             .single-img
-              display block
-              border: 0
+              flex: 1
+              height: 0
+              padding-top: 53%
               width: 100%
-              pointer-events: none
+              transform-origin: top
+              background-size: cover
           .video-wrapper
             display: flex
             align-items: center
             margin-bottom: 10px
             position: relative
+            justify-content: center
             .video-img
               flex: 1
-              height: 200px
+              height: 0
+              padding-top: 53%
+              width: 100%
+              transform-origin: top
+              background-size: cover
             .video-icon
               position: absolute
               top: 50%

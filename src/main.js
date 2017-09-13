@@ -12,6 +12,7 @@ fastclick.attach(document.body)
 Vue.use(VueLazyload, {
   loading: require('common/image/default.png')
 })
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
