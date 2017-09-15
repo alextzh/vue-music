@@ -32,3 +32,5 @@ export const SET_NEWS_LIST = 'SET_NEWS_LIST'
 export const SET_ACTIVE_INDEX = 'SET_ACTIVE_INDEX'
 
 export const SET_TAG = 'SET_TAG'
+
+export const SET_NEWS_DETAIL = 'SET_NEWS_DETAIL'

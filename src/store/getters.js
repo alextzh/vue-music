@@ -27,6 +27,8 @@ export const activeIndex = state => state.activeIndex
 
 export const tag = state => state.tag
 
+export const newsDetail = state => state.newsDetail
+
 export const disc = state => state.disc
 
 export const topList = state => state.topList

@@ -80,7 +80,8 @@ const state = {
   ],
   newsList: {},
   activeIndex: 0,
-  tag: '__all__'
+  tag: '__all__',
+  newsDetail: {}
 }
 
 export default state

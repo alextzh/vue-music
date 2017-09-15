@@ -51,6 +51,9 @@ const mutations = {
   },
   [types.SET_TAG](state, str) {
     state.tag = str
+  },
+  [types.SET_NEWS_DETAIL](state, list) {
+    state.newsDetail = list
   }
 }
 
