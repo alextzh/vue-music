@@ -127,7 +127,7 @@
       }
     },
     created() {
-      this.pullDownInitTop = -50
+      this.pullDownInitTop = -60
     },
     mounted() {
       setTimeout(() => {
@@ -225,7 +225,6 @@
           } else {
             this.bubbleY = 0
           }
-
           if (this.isRebounding) {
             this.pullDownStyle = `top:${10 - (this.pullDownRefresh.stop - pos.y)}px`
           }
@@ -272,6 +271,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "~common/stylus/variable"
   .list-wrapper
     position: absolute
     left: 0
@@ -280,16 +280,6 @@
     bottom: 0
     overflow: hidden
     background: $color-background
-    .list-content
-      position: relative
-      z-index: 10
-      background: #fff
-      .list-item
-        height: 60px
-        line-height: 60px
-        font-size: 18px
-        padding-left: 20px
-        border-bottom: 1px solid #e5e5e5
   .pulldown-wrapper
     position: absolute
     width: 100%

@@ -69,7 +69,7 @@
         this.$router.back()
       },
       _getNewsDetail() {
-        if (!this.currentNew.item_id) {
+        if (!this.currentNew.item_id || this.currentNew.label_style === 3) {
           this.$router.push('/news')
           return false
         }
@@ -78,7 +78,10 @@
             this.newsDetail = this._normalizeNews(res.data)
             setTimeout(() => {
               this._loadImg()
-              this.isLoad = !this.isLoad
+              this.$nextTick(() => {
+                this.$refs.scroll.forceUpdate()
+                this.isLoad = !this.isLoad
+              })
             }, 20)
           }
         })
@@ -111,16 +114,17 @@
           return `<span style="display: inline-block;padding:2px;border:1px solid #ffcd32;border-radius:4px;color:#ffcd32;font-size:10px;line-height:1;">原创</span>  ${getTime(item.publish_time)}`
         }
         return `${getTime(item.publish_time)}`
+      },
+      rebuildScroll() {
+        this.$nextTick(() => {
+          this.$refs.scroll.destroy()
+          this.$refs.scroll.initScroll()
+        })
       }
     },
     watch: {
       scrollbarObj() {
-        this.$refs.scroll.refresh()
-      },
-      isLoad(val) {
-        if (val) {
-          this.$refs.scroll.refresh()
-        }
+        this.rebuildScroll()
       }
     },
     components: {

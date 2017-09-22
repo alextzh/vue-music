@@ -4,7 +4,15 @@
       <scroll-tab @select="selectTab"></scroll-tab>
     </div>
     <div class="news-content">
-      <scroll ref="newsList" class="news-list" :data="newsList">
+      <scroll ref="scroll" class="news-list"
+              :data="newsList"
+              :scrollbar="scrollbarObj"
+              :pullDownRefresh="pullDownRefreshObj"
+              :pullUpLoad="pullUpLoadObj"
+              :startY="parseInt(startY)"
+              @pullingDown="onPullingDown"
+              @pullingUp="onPullingUp"
+      >
         <ul>
           <li v-for="item in newsList" class="item" @click="selectItem(item)">
             <div class="item-con">
@@ -52,10 +60,10 @@
             </div>
           </li>
         </ul>
-        <div class="loading-container" v-show="!newsList.length">
-          <loading></loading>
-        </div>
       </scroll>
+      <div class="loading-container" v-show="!newsList.length">
+        <loading></loading>
+      </div>
     </div>
     <router-view></router-view>
   </div>
@@ -64,7 +72,7 @@
 <script type="text/ecmascript-6">
   import ScrollTab from 'components/scroll-tab/scroll-tab'
   import Loading from 'base/loading/loading'
-  import Scroll from 'base/scroll/scroll'
+  import Scroll from 'base/new-scroll/new-scroll'
   import {getNewsList} from 'api/news'
   import {getTimes, format} from 'common/js/news'
   import {mapGetters, mapMutations} from 'vuex'
@@ -72,10 +80,32 @@
   export default {
     data() {
       return {
-        newsList: []
+        newsList: [],
+        scrollbar: true,
+        scrollbarFade: true,
+        pullDownRefresh: true,
+        pullDownRefreshThreshold: 90,
+        pullDownRefreshStop: 50,
+        pullUpLoad: true,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '加载更多',
+        pullUpLoadNoMoreTxt: '没有更多数据了',
+        startY: 0
       }
     },
     computed: {
+      scrollbarObj: function () {
+        return this.scrollbar ? {fade: this.scrollbarFade} : false
+      },
+      pullDownRefreshObj: function () {
+        return this.pullDownRefresh ? {
+          threshold: parseInt(this.pullDownRefreshThreshold),
+          stop: parseInt(this.pullDownRefreshStop)
+        } : false
+      },
+      pullUpLoadObj: function () {
+        return this.pullUpLoad ? {threshold: parseInt(this.pullUpLoadThreshold), txt: {more: this.pullUpLoadMoreTxt, noMore: this.pullUpLoadNoMoreTxt}} : false
+      },
       ...mapGetters([
         'tag'
       ])
@@ -115,6 +145,26 @@
       formatTime(time) {
         return format(time)
       },
+      onPullingDown() {
+        // 更新数据
+        setTimeout(() => {
+          getNewsList(this.tag).then((res) => {
+            if (res.data) {
+              this.newsList = res.data
+            }
+          })
+        }, 1000)
+      },
+      onPullingUp() {
+        // 加载更多数据
+        setTimeout(() => {
+          getNewsList(this.tag).then((res) => {
+            if (res.data) {
+              this.newsList = this.newsList.concat(res.data)
+            }
+          })
+        }, 1000)
+      },
       ...mapMutations({
         setCurrentNew: 'SET_CURRENT_NEW'
       })
@@ -146,8 +196,6 @@
       width: 100%
       overflow: hidden
       .news-list
-        height: 100%
-        overflow: hidden
         .item
           display: flex
           box-sizing: border-box
@@ -253,9 +301,9 @@
                   font-size: 14px
                   color: #ffcd32
                   transform: translate(-50%,-50%)
-        .loading-container
-          position: absolute
-          width: 100%
-          top: 50%
-          transform: translateY(-50%)
+      .loading-container
+        position: absolute
+        width: 100%
+        top: 50%
+        transform: translateY(-50%)
 </style>

@@ -59,9 +59,6 @@
         this.items.push('我是第 ' + ++this.itemIndex + ' 行')
       }
     },
-    mounted() {
-
-    },
     methods: {
       clickItem(item) {
         console.log(item)
