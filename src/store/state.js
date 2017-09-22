@@ -78,10 +78,10 @@ const state = {
       to: 'fashion'
     }
   ],
-  newsList: {},
+  currentNew: {},
   activeIndex: 0,
   tag: '__all__',
-  newsDetail: {}
+  newsDetail: []
 }
 
 export default state

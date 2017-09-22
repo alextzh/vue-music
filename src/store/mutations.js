@@ -43,8 +43,8 @@ const mutations = {
   [types.SET_NAV_LIST](state, list) {
     state.navList = list
   },
-  [types.SET_NEWS_LIST](state, list) {
-    state.newsList = list
+  [types.SET_CURRENT_NEW](state, list) {
+    state.currentNew = list
   },
   [types.SET_ACTIVE_INDEX](state, index) {
     state.activeIndex = index

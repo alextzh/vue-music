@@ -65,7 +65,7 @@
   import ScrollTab from 'components/scroll-tab/scroll-tab'
   import Loading from 'base/loading/loading'
   import Scroll from 'base/scroll/scroll'
-  import {getNewsList, getNewsDetail} from 'api/news'
+  import {getNewsList} from 'api/news'
   import {getTimes, format} from 'common/js/news'
   import {mapGetters, mapMutations} from 'vuex'
 
@@ -88,24 +88,15 @@
         this._getNewsList(this.tag)
       },
       selectItem(item) {
-        this.setNewsList(item)
+        this.setCurrentNew(item)
         this.$router.push({
-          path: `/news/${item.group_id}`
+          path: `/news/${item.item_id}`
         })
-        this._getNewsDetail(item.group_id)
       },
       _getNewsList(tag) {
         getNewsList(tag).then((res) => {
           if (res.data) {
             this.newsList = res.data
-            this.setNewsList(res.data)
-          }
-        })
-      },
-      _getNewsDetail(id) {
-        getNewsDetail(id).then((res) => {
-          if (res.data) {
-            this.setNewsDetail(res.data)
           }
         })
       },
@@ -125,16 +116,8 @@
         return format(time)
       },
       ...mapMutations({
-        setNewsList: 'SET_NEWS_LIST',
-        setNewsDetail: 'SET_NEWS_DETAIL'
+        setCurrentNew: 'SET_CURRENT_NEW'
       })
-    },
-    watch: {
-      data() {
-        setTimeout(() => {
-          this.$refs.newsList.refresh()
-        }, 20)
-      }
     },
     components: {
       ScrollTab,
@@ -243,7 +226,6 @@
               .icon
                 flex: 0 0 116px
                 width: 116px
-                padding-left: 20px
                 order: 1
               .text
                 display: flex
@@ -253,6 +235,7 @@
                 line-height: 20px
                 overflow: hidden
                 font-size: $font-size-medium
+                padding-right: 20px
                 .name
                   margin-bottom: 10px
                   color: $color-text
@@ -261,7 +244,6 @@
               .mini-video-wrapper
                 flex: 0 0 116px
                 width: 116px
-                padding-left: 20px
                 order: 1
                 position: relative
                 .mini-video-icon

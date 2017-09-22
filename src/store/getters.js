@@ -21,7 +21,7 @@ export const currentSong = (state) => {
 }
 export const navList = state => state.navList
 
-export const newsList = state => state.newsList
+export const currentNew = state => state.currentNew
 
 export const activeIndex = state => state.activeIndex
 

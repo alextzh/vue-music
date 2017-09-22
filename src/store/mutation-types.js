@@ -27,7 +27,7 @@ export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'
 
 export const SET_NAV_LIST = 'SET_NAV_LIST'
 
-export const SET_NEWS_LIST = 'SET_NEWS_LIST'
+export const SET_CURRENT_NEW = 'SET_CURRENT_NEW'
 
 export const SET_ACTIVE_INDEX = 'SET_ACTIVE_INDEX'
 

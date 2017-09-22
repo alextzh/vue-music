@@ -1,237 +1,126 @@
 <template>
-  <div class="list-wrapper" ref="listWrapper">
-    <ul class="list-content">
-      <li class="list-item" v-for="item in data">
-        {{item}}
-      </li>
-      <li class="pullup-wrapper" v-if="pullUpLoad" v-show="data.length">
-        <div class="before-trigger" v-if="!isPullUpLoad">
-          <span>加载更多</span>
-        </div>
-        <div class="after-trigger" v-else>
-          <loading></loading>
-        </div>
-      </li>
+  <scroll class="list-wrapper" ref="scroll"
+          :data="items"
+          :scrollbar="scrollbarObj"
+          :pullDownRefresh="pullDownRefreshObj"
+          :pullUpLoad="pullUpLoadObj"
+          :startY="parseInt(startY)"
+          @pullingDown="onPullingDown"
+          @pullingUp="onPullingUp">
+    <ul ref="list" class="list-content">
+      <li @click="clickItem(item)" class="list-item" v-for="item in items">{{item}}</li>
     </ul>
-    <div class="pulldown-wrapper" ref="pulldown" v-if="pullDownRefresh" v-show="data.length">
-      <div class="before-trigger" v-if="beforePullDown">
-        <bubble :y="bubbleY"></bubble>
-      </div>
-      <div class="after-trigger" v-else>
-        <div class="loading" v-if="pulling">
-          <loading></loading>
-        </div>
-        <div v-else><span>刷新成功</span></div>
-      </div>
-    </div>
-    <div class="loading-container" v-show="!data.length">
+    <div v-show="!items.length" class="loading-container">
       <loading></loading>
     </div>
-    <div class="no-result-wrapper" v-show="!data.length">
-      <no-result title="抱歉，暂无数据"></no-result>
-    </div>
-  </div>
+  </scroll>
 </template>
 
 <script type="text/ecmascript-6">
-  import BScroll from 'better-scroll'
+  import Scroll from 'base/new-scroll/new-scroll'
   import Loading from 'base/loading/loading'
-  import Bubble from 'base/bubble/bubble'
-  import NoResult from 'base/no-result/no-result'
 
   const COMPONENT_NAME = 'scroll-list'
-  const DIRECTION_H = 'horizontal'
-  const DIRECTION_V = 'vertical'
 
   export default {
     name: COMPONENT_NAME,
-    props: {
-      data: {
-        type: Array,
-        default: []
-      },
-      scrollbar: {
-        type: Boolean,
-        default: false
-      },
-      scrollbarFade: {
-        type: Boolean,
-        default: false
-      },
-      pullDownRefresh: {
-        type: Boolean,
-        default: false
-      },
-      pullUpLoad: {
-        type: Boolean,
-        default: false
-      },
-      probeType: {
-        type: Number,
-        default: 1
-      },
-      click: {
-        type: Boolean,
-        default: false
-      },
-      listenScroll: {
-        type: Boolean,
-        default: false
-      },
-      pullup: {
-        type: Boolean,
-        default: false
-      },
-      beforeScroll: {
-        type: Boolean,
-        default: false
-      },
-      refreshDelay: {
-        type: Number,
-        default: 20
-      },
-      direction: {
-        type: String,
-        default: DIRECTION_V
-      }
-    },
     data() {
       return {
-        beforePullDown: true,
-        isPullingDown: false,
-        pulling: false,
-        isPullUpLoad: false,
-        bubbleY: 0
+        items: [],
+        scrollbar: true,
+        scrollbarFade: true,
+        pullDownRefresh: true,
+        pullDownRefreshThreshold: 90,
+        pullDownRefreshStop: 40,
+        pullUpLoad: true,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '加载更多',
+        pullUpLoadNoMoreTxt: '没有更多数据了',
+        startY: 0,
+        itemIndex: 0
+      }
+    },
+    computed: {
+      scrollbarObj: function () {
+        return this.scrollbar ? {fade: this.scrollbarFade} : false
+      },
+      pullDownRefreshObj: function () {
+        return this.pullDownRefresh ? {
+          threshold: parseInt(this.pullDownRefreshThreshold),
+          stop: parseInt(this.pullDownRefreshStop)
+        } : false
+      },
+      pullUpLoadObj: function () {
+        return this.pullUpLoad ? {threshold: parseInt(this.pullUpLoadThreshold), txt: {more: this.pullUpLoadMoreTxt, noMore: this.pullUpLoadNoMoreTxt}} : false
       }
     },
     created() {
-      this.pulldownInitTop = -50
+      for (let i = 0; i < 20; i++) {
+        this.items.push('我是第 ' + ++this.itemIndex + ' 行')
+      }
     },
     mounted() {
-      setTimeout(() => {
-        this._initScroll()
-      }, 20)
+
     },
     methods: {
-      _initScroll() {
-        if (!this.$refs.listWrapper) {
-          return
-        }
-        let options = {
-          probeType: this.probeType,
-          click: this.click,
-          scrollY: this.direction === DIRECTION_V,
-          scrollX: this.direction === DIRECTION_H,
-          // eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
-          scrollbar: this.scrollbar,
-          scrollbarFade: this.scrollbarFade,
-          pullDownRefresh: this.pullDownRefresh ? {stop: 40} : false,
-          pullUpLoad: this.pullUpLoad
-        }
-        this.scroll = new BScroll(this.$refs.listWrapper, options)
-        if (this.listenScroll) {
-          this.scroll.on('scroll', (pos) => {
-            this.$emit('scroll', pos)
-          })
-        }
-        if (this.beforeScroll) {
-          this.scroll.on('beforeScrollStart', () => {
-            this.$emit('beforeScroll')
-          })
-        }
-        if (this.pullDownRefresh) {
-          this.scroll.on('pullingDown', () => {
-            this.$emit('pullingDown')
-            this.beforePullDown = false
-            this.isPullingDown = true
-            this.pulling = true
-          })
-          this.scroll.on('scroll', (pos) => {
-            if (this.beforePullDown) {
-              this.bubbleY = Math.max(0, pos.y + this.pulldownInitTop)
-              this.$refs.pulldown.style.transitionDuration = ''
-              this.$refs.pulldown.style.top = `${Math.min(pos.y + this.pulldownInitTop, 10)}px`
-            } else {
-              this.bubbleY = 0
+      clickItem(item) {
+        console.log(item)
+      },
+      onPullingDown() {
+        // 模拟更新数据
+        console.log('pulling down and load data')
+        setTimeout(() => {
+          if (Math.random() > 0.5) {
+            // 如果有新数据
+            this.items.unshift('我是新数据' + +new Date())
+          } else {
+            // 如果没有新数据
+            this.$refs.scroll.forceUpdate()
+          }
+        }, 1000)
+      },
+      onPullingUp() {
+        // 更新数据
+        console.log('pulling up and load data')
+        setTimeout(() => {
+          if (Math.random() > 0.5) {
+            // 如果有新数据
+            let newPage = []
+            for (let i = 0; i < 10; i++) {
+              newPage.push('我是第 ' + ++this.itemIndex + ' 行')
             }
-          })
-        }
 
-        if (this.pullUpLoad) {
-          this.scroll.on('pullingUp', () => {
-            this.$emit('pullingUp')
-            this.isPullUpLoad = true
-          })
-        }
+            this.items = this.items.concat(newPage)
+          } else {
+            // 如果没有新数据
+            this.$refs.scroll.forceUpdate()
+          }
+        }, 1000)
       },
-      enable() {
-        this.scroll && this.scroll.enable()
-      },
-      disable() {
-        this.scroll && this.scroll.disable()
-      },
-      refresh() {
-        this.scroll && this.scroll.refresh()
-      },
-      scrollTo() {
-        this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
-      },
-      scrollToElement() {
-        this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
-      },
-      finishPullDown() {
-        this.scroll && this.scroll.finishPullDown()
-      },
-      finishPullUp() {
-        this.scroll && this.scroll.finishPullUp()
+      rebuildScroll() {
+        this.$nextTick(() => {
+          this.$refs.scroll.destroy()
+          this.$refs.scroll.initScroll()
+        })
       }
     },
     watch: {
-      data() {
-        setTimeout(() => {
-          if (this.pullDownRefresh && this.isPullingDown) {
-            this.pulling = false
-            setTimeout(() => {
-              this.finishPullDown()
-              this.isPullingDown = false
-              setTimeout(() => {
-                this.beforePullDown = true
-                this.refresh()
-              }, this.scroll.options.bounceTime)
-            }, 500)
-          } else if (this.pullUpLoad && this.isPullUpLoad) {
-            this.isPullUpLoad = false
-            this.finishPullUp()
-            this.refresh()
-          } else {
-            this.refresh()
-          }
-        }, this.refreshDelay)
+      scrollbarObj() {
+        this.rebuildScroll()
       },
-      isPullingDown(val) {
-        if (!val) {
-          this.$refs.pulldown.style.top = `${this.pulldownInitTop}px`
-          this.$refs.pulldown.style.transitionDuration = '700ms'
-          this.$refs.pulldown.style.transitionTimingFunction = 'cubic-bezier(0.165, 0.84, 0.44, 1)'
-        }
+      pullDownRefreshObj() {
+        this.rebuildScroll()
       },
-      scrollbar() {
-        this.scroll.destroy()
-        this._initScroll()
+      pullUpLoadObj() {
+        this.rebuildScroll()
       },
-      pullDownRefresh() {
-        this.scroll.destroy()
-        this._initScroll()
-      },
-      pullUpLoad() {
-        this.scroll.destroy()
-        this._initScroll()
+      startY() {
+        this.rebuildScroll()
       }
     },
     components: {
-      Loading,
-      Bubble,
-      NoResult
+      Scroll,
+      Loading
     }
   }
 </script>
@@ -258,27 +147,6 @@
         padding-left: 20px
         border-bottom: 1px solid #e5e5e5
     .loading-container
-      position: absolute
-      width: 100%
-      top: 50%
-      transform: translateY(-50%)
-    .pulldown-wrapper
-      position: absolute
-      width: 100%
-      left: 0
-      display: flex
-      justify-content center
-      align-items center
-      transition: all
-      .after-trigger
-        margin-top: 10px
-    .pullup-wrapper
-      width: 100%
-      display: flex
-      justify-content center
-      align-items center
-      padding: 1rem 0
-    .no-result-wrapper
       position: absolute
       width: 100%
       top: 50%

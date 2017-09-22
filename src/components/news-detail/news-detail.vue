@@ -4,23 +4,28 @@
       <div class="back" @click="back">
         <i class="icon-back"></i>
       </div>
-      <h1 class="top-title" v-html="title"></h1>
+      <h1 class="top-title" v-html="source"></h1>
       <div class="detail-wrapper">
-        <div class="detail-content" ref="detailContent">
+        <scroll class="detail-content" ref="scroll"
+                :data="newsDetail"
+                :scrollbar="scrollbarObj"
+        >
           <ul class="detail-group" ref="box">
-            <li class="title" ref="title" v-html="newsDetail.title"></li>
-            <li class="media" ref="media" v-show="newsDetail.media_user">
-              <div class="icon">
-                <img class="img" v-lazy="getAvatar">
+            <li v-for="item in newsDetail">
+              <div class="title" ref="title" v-html="item.title"></div>
+              <div class="media" ref="media" v-show="item.media_user">
+                <div class="icon" v-show="item.is_pgc_article">
+                  <img class="img" v-lazy="getAvatar(item.media_user)">
+                </div>
+                <div class="text">
+                  <h2 class="name" v-html="item.source"></h2>
+                  <p class="desc" v-html="getDesc(item)"></p>
+                </div>
               </div>
-              <div class="text">
-                <h2 class="name" v-html="getName"></h2>
-                <p class="desc" v-html="getDesc"></p>
-              </div>
+              <div class="content" ref="content" v-html="item.content"></div>
             </li>
-            <li class="content" id="content" ref="content" v-html="newsDetail.content"></li>
           </ul>
-        </div>
+        </scroll>
         <div class="loading-container" v-show="!newsDetail">
           <loading></loading>
         </div>
@@ -31,86 +36,95 @@
 
 <script type="text/ecmascript-6">
   import Loading from 'base/loading/loading'
-  import BScroll from 'better-scroll'
-  import {mapGetters} from 'vuex'
+  import Scroll from 'base/new-scroll/new-scroll'
   import {getTime} from 'common/js/news'
+  import {mapGetters} from 'vuex'
+  import {getNewsDetail} from 'api/news'
 
   export default {
+    data() {
+      return {
+        newsDetail: [],
+        scrollbar: true,
+        scrollbarFade: true,
+        isLoad: false
+      }
+    },
     computed: {
-      title() {
-        return this.newsList.source
+      scrollbarObj: function () {
+        return this.scrollbar ? {fade: this.scrollbarFade} : false
       },
-      getAvatar() {
-        let obj = {}
-        if (this.newsList.media_info) {
-          obj = this.newsList.media_info
-          return obj.avatar_url
-        }
-      },
-      getName() {
-        let obj = {}
-        if (this.newsList.media_info) {
-          obj = this.newsList.media_info
-          return obj.name
-        }
-      },
-      getDesc() {
-        if (this.newsDetail.is_original) {
-          return `<span style="display: inline-block;padding:2px;border:1px solid #ffcd32;border-radius:4px;color:#ffcd32;font-size:10px;line-height:1;">原创</span>  ${getTime(this.newsDetail.publish_time)}`
-        }
-        return `${getTime(this.newsDetail.publish_time)}`
+      source() {
+        return this.currentNew.source
       },
       ...mapGetters([
-        'newsList',
-        'newsDetail'
+        'currentNew'
       ])
     },
     created() {
-      this._init()
-      console.log(this.newsDetail)
-    },
-    mounted() {
-      setTimeout(() => {
-        this._setHeight()
-        this._initScroll()
-      }, 20)
+      this._getNewsDetail()
     },
     methods: {
-      refresh() {
-        if (this.scroll) {
-          this._setHeight()
-          this.scroll.refresh()
-        }
-      },
       back() {
         this.$router.back()
       },
-      _init() {
-        if (!this.newsList.group_id) {
+      _getNewsDetail() {
+        if (!this.currentNew.item_id) {
           this.$router.push('/news')
           return false
         }
+        getNewsDetail(this.currentNew.item_id).then((res) => {
+          if (res.data) {
+            this.newsDetail = this._normalizeNews(res.data)
+            setTimeout(() => {
+              this._loadImg()
+              this.isLoad = !this.isLoad
+            }, 20)
+          }
+        })
       },
-      _setHeight() {
-        let height = 0
-        let dBox = document.getElementById('content')
-        let dImg = dBox.getElementsByTagName('img')
-        let imgH = 0
-        for (let i = 0; i < dImg.length; i++) {
-          imgH += parseInt(dImg[i].attributes[2].value)
-        }
-        height += imgH
-        let children = this.$refs.content.children[0].children
-        for (let n = 0; n < children.length; n++) {
-          height += parseInt(children[n].clientHeight)
-        }
-        this.$refs.box.style.height = height - dImg.length * 21 + parseInt(this.$refs.media.clientHeight) + parseInt(this.$refs.title.clientHeight) + 'px'
+      _normalizeNews(data) {
+        let ret = []
+        let arr = []
+        ret.push(data)
+        arr = ret.splice(-1, 1)
+        return arr
       },
-      _initScroll() {
-        this.scroll = new BScroll(this.$refs.detailContent, {})
+      _loadImg() {
+        let oP = this.$refs.content[0].getElementsByTagName('p')
+        let oImg = this.$refs.content[0].getElementsByTagName('img')
+        for (let i = 0; i < oP.length; i++) {
+          oP[i].style.fontSize = '15px'
+          oP[i].style.lineHeight = '24px'
+        }
+        for (let i = 0; i < oImg.length; i++) {
+          oImg[i].style.width = '100%'
+          oImg[i].style.display = 'block'
+        }
+        this.isLoad = true
+      },
+      getAvatar(item) {
+        return item.avatar_url
+      },
+      getDesc(item) {
+        if (item.is_original) {
+          return `<span style="display: inline-block;padding:2px;border:1px solid #ffcd32;border-radius:4px;color:#ffcd32;font-size:10px;line-height:1;">原创</span>  ${getTime(item.publish_time)}`
+        }
+        return `${getTime(item.publish_time)}`
+      }
+    },
+    watch: {
+      scrollbarObj() {
+        this.$refs.scroll.refresh()
+      },
+      isLoad(val) {
+        if (val) {
+          this.$refs.scroll.refresh()
+        }
       }
     },
     components: {
+      Scroll,
       Loading
     }
   }
@@ -149,56 +163,60 @@
       font-size: $font-size-large
       color: $color-text
     .detail-wrapper
-      position: fixed
+      position: absolute
       top: 40px
       bottom: 0
       width: 100%
       .detail-content
         height: 100%
-        .detail-group
+        overflow: hidden
+        .media
           position: relative
-          overflow: hidden
-          .media
-            position: relative
-            display: flex
-            box-sizing: border-box
-            align-items: center
-            padding: 10px 15px
-            .icon
-              flex: 0 0 50px
-              width: 50px
-              border-radius: 50%
-              margin-right: 15px
-              overflow: hidden
-              .img
-                width: 50px
-                height: 50px
-                border-radius: 50%
-            .text
-              display: flex
-              flex-direction: column
-              justify-content: center
-              flex: 1
-              line-height: 20px
-              overflow: hidden
-              font-size: $font-size-medium
-              .name
-                margin-bottom: 10px
-                color: $color-text
-              .desc
-                color: $color-text-d
-          .title
-            padding: 0 15px
-            font-size: 16px
-            color: $color-text
-            font-weight: 600
-            line-height: 1.5
-          .content
-            padding: 10px 15px
-            font-size: 14px
-            line-height: 1.5
-            box-sizing: border-box
+          display: flex
+          box-sizing: border-box
+          align-items: center
+          padding: 10px 15px
+          .icon
+            flex: 0 0 50px
+            width: 50px
+            border-radius: 50%
+            margin-right: 15px
             overflow: hidden
+            .img
+              width: 50px
+              height: 50px
+              border-radius: 50%
+          .text
+            display: flex
+            flex-direction: column
+            justify-content: center
+            flex: 1
+            line-height: 20px
+            overflow: hidden
+            font-size: $font-size-medium
+            .name
+              margin-bottom: 10px
+              color: $color-text
+            .desc
+              color: $color-text-d
+        .title
+          padding: 0 15px
+          font-size: 16px
+          color: $color-text
+          font-weight: 600
+          line-height: 1.5
+        .content
+          padding: 10px 15px
+          box-sizing: border-box
+          overflow: hidden
+          p
+            width: 100%
+            overflow: hidden
+            font-size: 14px
+            line-height: 24px
+          img
+            display: block
+            width: 100%
   .slider-enter-active,.slider-leave-active
     transition: all 0.3s
   .slider-enter,.slider-leave-to
