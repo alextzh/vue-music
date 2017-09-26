@@ -62,6 +62,48 @@ apiRoutes.get('/lyric', (req,res) => {
     console.log(e)
   })
 })
+apiRoutes.get('/getGameItems', (req,res) => {
+  var url = 'https://bocaidj.com/api/v507/app.php'
+  axios.get(url, {
+    headers: {
+      origin: 'https://bocaidj.com',
+      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((e) => {
+    console.log(e)
+  })
+})
+apiRoutes.get('/getGameBanner', (req,res) => {
+  var url = 'https://bocaidj.com/api/v507/app.php'
+  axios.get(url, {
+    headers: {
+      origin: 'https://bocaidj.com',
+      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((e) => {
+    console.log(e)
+  })
+})
+apiRoutes.get('/getGameList', (req,res) => {
+  var url = 'https://bocaidj.com/api/v507/app.php'
+  axios.get(url, {
+    headers: {
+      origin: 'https://bocaidj.com',
+      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((e) => {
+    console.log(e)
+  })
+})
 app.use('/api',apiRoutes)
 // favicon
 app.use(favicon(__dirname + '/../favicon.ico'))

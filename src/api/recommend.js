@@ -50,3 +50,53 @@ export function getSongList(disstid) {
   })
   return jsonp(url, data, options)
 }
+export function getGameItems() {
+  const url = '/api/getGameItems'
+  const data = {
+    app_signature: '8f6a604c5c7f0784eaa40cdeb6fec603',
+    appid: '45f8f98fedc702b3d2334424ebc8e2d9',
+    app_ts: 1506412742,
+    module: 'guess',
+    action: 'get_game'
+  }
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+export function getGameBanner() {
+  const url = '/api/getGameBanner'
+  const data = {
+    app_signature: '511060d2b525661237198c35aff245e4',
+    appid: '45f8f98fedc702b3d2334424ebc8e2d9',
+    app_ts: 1506413717,
+    module: 'guess',
+    action: 'get_banner',
+    channel: 2
+  }
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+export function getGameList() {
+  const url = '/api/getGameList'
+  const data = {
+    app_signature: '511060d2b525661237198c35aff245e4',
+    appid: '45f8f98fedc702b3d2334424ebc8e2d9',
+    app_ts: 1506413717,
+    module: 'guess',
+    action: 'get_guess',
+    page: 1,
+    page_num: 30,
+    act: '',
+    uid: null
+  }
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

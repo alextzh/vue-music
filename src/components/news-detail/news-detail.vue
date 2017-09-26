@@ -46,8 +46,7 @@
       return {
         newsDetail: [],
         scrollbar: true,
-        scrollbarFade: true,
-        isLoad: false
+        scrollbarFade: true
       }
     },
     computed: {
@@ -64,6 +63,10 @@
     created() {
       this._getNewsDetail()
     },
+    watch: {
+      // 如果路由有变化，会再次执行该方法
+      '$route': '_getNewsDetail'
+    },
     methods: {
       back() {
         this.$router.back()
@@ -79,8 +82,7 @@
             setTimeout(() => {
               this._loadImg()
               this.$nextTick(() => {
-                this.$refs.scroll.forceUpdate()
-                this.isLoad = !this.isLoad
+                this.$refs.scroll.refresh()
               })
             }, 20)
           }
@@ -104,7 +106,6 @@
           oImg[i].style.width = '100%'
           oImg[i].style.display = 'block'
         }
-        this.isLoad = true
       },
       getAvatar(item) {
         return item.avatar_url
@@ -114,17 +115,6 @@
           return `<span style="display: inline-block;padding:2px;border:1px solid #ffcd32;border-radius:4px;color:#ffcd32;font-size:10px;line-height:1;">原创</span>  ${getTime(item.publish_time)}`
         }
         return `${getTime(item.publish_time)}`
-      },
-      rebuildScroll() {
-        this.$nextTick(() => {
-          this.$refs.scroll.destroy()
-          this.$refs.scroll.initScroll()
-        })
-      }
-    },
-    watch: {
-      scrollbarObj() {
-        this.rebuildScroll()
       }
     },
     components: {
