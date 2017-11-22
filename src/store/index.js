@@ -1,6 +1,3 @@
-/**
- * Created by tianzhihong on 2017/7/3.
- */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import * as actions from './actions'

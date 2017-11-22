@@ -1,5 +1,6 @@
 <template>
-  <scroll class="suggest" ref="suggest"
+  <scroll ref="suggest"
+          class="suggest"
           :data="result"
           :pullup="pullup"
           :beforeScroll="beforeScroll"
@@ -17,50 +18,48 @@
       </li>
       <loading v-show="hasMore" title=""></loading>
     </ul>
-    <div class="no-result-wrapper" v-show="!hasMore && !result.length">
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
       <no-result title="抱歉，暂无搜索结果"></no-result>
     </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+  import NoResult from 'base/no-result/no-result'
   import {search} from 'api/search'
   import {ERR_OK} from 'api/config'
   import {createSong} from 'common/js/song'
-  import Scroll from 'base/scroll/scroll'
-  import Loading from 'base/loading/loading'
-  import Singer from 'common/js/singer'
   import {mapMutations, mapActions} from 'vuex'
-  import NoResult from 'base/no-result/no-result'
-
+  import Singer from 'common/js/singer'
   const TYPE_SINGER = 'singer'
   const perpage = 20
-
   export default {
     props: {
-      query: {
-        type: String,
-        default: ''
-      },
       showSinger: {
         type: Boolean,
         default: true
+      },
+      query: {
+        type: String,
+        default: ''
       }
     },
     data() {
       return {
         page: 1,
-        result: [],
         pullup: true,
         beforeScroll: true,
-        hasMore: true
+        hasMore: true,
+        result: []
       }
     },
     methods: {
       refresh() {
         this.$refs.suggest.refresh()
       },
-      _search() {
+      search() {
         this.page = 1
         this.hasMore = true
         this.$refs.suggest.scrollTo(0, 0)
@@ -105,7 +104,7 @@
         if (item.type === TYPE_SINGER) {
           return item.singername
         } else {
-          return `${item.name} - ${item.singer}`
+          return `${item.name}-${item.singer}`
         }
       },
       getIconCls(item) {
@@ -136,7 +135,7 @@
       },
       _checkMore(data) {
         const song = data.song
-        if (!song.list.length || (song.curnum + (song.curpage - 1) * perpage) >= song.totalnum || song.totalnum <= perpage) {
+        if (!song.list.length || (song.curnum + (song.curpage - 1) * perpage) >= song.totalnum) {
           this.hasMore = false
         }
       },
@@ -152,7 +151,7 @@
         if (!newQuery) {
           return
         }
-        this._search(newQuery)
+        this.search(newQuery)
       }
     },
     components: {

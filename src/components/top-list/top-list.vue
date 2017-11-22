@@ -10,17 +10,7 @@
   import {ERR_OK} from 'api/config'
   import {mapGetters} from 'vuex'
   import {createSong} from 'common/js/song'
-
   export default {
-    data() {
-      return {
-        songs: [],
-        rank: true
-      }
-    },
-    created() {
-      this._getMusicList()
-    },
     computed: {
       title() {
         return this.topList.topTitle
@@ -34,6 +24,15 @@
       ...mapGetters([
         'topList'
       ])
+    },
+    data() {
+      return {
+        songs: [],
+        rank: true
+      }
+    },
+    created() {
+      this._getMusicList()
     },
     methods: {
       _getMusicList() {

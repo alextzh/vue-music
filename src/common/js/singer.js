@@ -1,7 +1,3 @@
-
-/**
- * Created by tianzhihong on 2017/6/30.
- */
 export default class Singer {
   constructor({id, name}) {
     this.id = id

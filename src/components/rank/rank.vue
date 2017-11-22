@@ -4,12 +4,12 @@
       <ul>
         <li @click="selectItem(item)" class="item" v-for="item in topList">
           <div class="icon">
-            <img width="100" height="100" v-lazy="item.picUrl" >
+            <img width="100" height="100" v-lazy="item.picUrl"/>
           </div>
           <ul class="songlist">
             <li class="song" v-for="(song,index) in item.songList">
               <span>{{index + 1}}</span>
-              <span>{{song.songname}} - {{song.singername}}</span>
+              <span>{{song.songname}}-{{song.singername}}</span>
             </li>
           </ul>
         </li>
@@ -29,16 +29,15 @@
   import {ERR_OK} from 'api/config'
   import {playlistMixin} from 'common/js/mixin'
   import {mapMutations} from 'vuex'
-
   export default {
     mixins: [playlistMixin],
+    created() {
+      this._getTopList()
+    },
     data() {
       return {
         topList: []
       }
-    },
-    created() {
-      this._getTopList()
     },
     methods: {
       handlePlaylist(playlist) {
@@ -63,6 +62,13 @@
         setTopList: 'SET_TOP_LIST'
       })
     },
+    watch: {
+      topList() {
+        setTimeout(() => {
+          this.$Lazyload.lazyLoadHandler()
+        }, 20)
+      }
+    },
     components: {
       Scroll,
       Loading
@@ -73,7 +79,6 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
-
   .rank
     position: fixed
     width: 100%

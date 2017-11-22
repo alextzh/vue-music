@@ -13,7 +13,6 @@
 <script type="text/ecmascript-6">
   import {addClass} from 'common/js/dom'
   import BScroll from 'better-scroll'
-
   export default {
     name: 'slider',
     props: {
@@ -41,12 +40,10 @@
         this._setSliderWidth()
         this._initDots()
         this._initSlider()
-
         if (this.autoPlay) {
           this._play()
         }
       }, 20)
-
       window.addEventListener('resize', () => {
         if (!this.slider || !this.slider.enabled) {
           return
@@ -96,13 +93,11 @@
       },
       _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children
-
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
         for (let i = 0; i < this.children.length; i++) {
           let child = this.children[i]
           addClass(child, 'slider-item')
-
           child.style.width = sliderWidth + 'px'
           width += sliderWidth
         }
@@ -122,15 +117,12 @@
             speed: 400
           }
         })
-
         this.slider.on('scrollEnd', this._onScrollEnd)
-
         this.slider.on('touchend', () => {
           if (this.autoPlay) {
             this._play()
           }
         })
-
         this.slider.on('beforeScrollStart', () => {
           if (this.autoPlay) {
             clearTimeout(this.timer)

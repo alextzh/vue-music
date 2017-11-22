@@ -40,11 +40,10 @@
   import Slider from 'base/slider/slider'
   import Loading from 'base/loading/loading'
   import Scroll from 'base/scroll/scroll'
-  import {getRecommend, getDiscList, getGameItems, getGameBanner, getGameList} from 'api/recommend'
+  import {getRecommend, getDiscList} from 'api/recommend'
   import {playlistMixin} from 'common/js/mixin'
   import {ERR_OK} from 'api/config'
   import {mapMutations} from 'vuex'
-
   export default {
     mixins: [playlistMixin],
     data() {
@@ -56,9 +55,6 @@
     created() {
       this._getRecommend()
       this._getDiscList()
-      this._getGameItems()
-      this._getGameBanner()
-      this._getGameList()
     },
     activated() {
       setTimeout(() => {
@@ -66,30 +62,8 @@
       }, 20)
     },
     methods: {
-      _getGameItems() {
-        getGameItems().then((res) => {
-          if (res.code === '0') {
-            console.log(res.data)
-          }
-        })
-      },
-      _getGameBanner() {
-        getGameBanner().then((res) => {
-          if (res.code === '0') {
-            console.log(res.data.banner)
-          }
-        })
-      },
-      _getGameList() {
-        getGameList().then((res) => {
-          if (res.code === '0') {
-            console.log(res.data)
-          }
-        })
-      },
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
-
         this.$refs.recommend.style.bottom = bottom
         this.$refs.scroll.refresh()
       },

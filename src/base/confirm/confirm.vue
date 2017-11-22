@@ -16,11 +16,6 @@
 
 <script type="text/ecmascript-6">
   export default {
-    data() {
-      return {
-        showFlag: false
-      }
-    },
     props: {
       text: {
         type: String,
@@ -32,7 +27,12 @@
       },
       cancelBtnText: {
         type: String,
-        default: '关闭'
+        default: '取消'
+      }
+    },
+    data() {
+      return {
+        showFlag: false
       }
     },
     methods: {
@@ -56,7 +56,6 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-
   .confirm
     position: fixed
     left: 0

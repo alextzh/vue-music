@@ -12,7 +12,6 @@ var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
 var axios = require('axios')
-var favicon = require('serve-favicon')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -26,12 +25,12 @@ var app = express()
 
 var apiRoutes = express.Router()
 
-apiRoutes.get('/getDiscList', (req,res) => {
+apiRoutes.get('/getDiscList', function (req, res) {
   var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
   axios.get(url, {
     headers: {
-      referer: 'https://y.qq.com/',
-      host: 'y.qq.com'
+      referer: 'https://c.y.qq.com/',
+      host: 'c.y.qq.com'
     },
     params: req.query
   }).then((response) => {
@@ -40,21 +39,22 @@ apiRoutes.get('/getDiscList', (req,res) => {
     console.log(e)
   })
 })
-apiRoutes.get('/lyric', (req,res) => {
-  var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+
+apiRoutes.get('/getCdInfo', function (req, res) {
+  var url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
   axios.get(url, {
     headers: {
-      referer: 'https://y.qq.com/',
-      host: 'y.qq.com'
+      referer: 'https://c.y.qq.com/',
+      host: 'c.y.qq.com'
     },
     params: req.query
   }).then((response) => {
     var ret = response.data
     if (typeof ret === 'string') {
-      var reg = /^\w+\(({[^()]+})\)$/
-      var mathes = ret.match(reg)
-      if (mathes){
-        ret = JSON.parse(mathes[1])
+      var reg = /^\w+\(({.+})\)$/
+      var matches = ret.match(reg)
+      if (matches) {
+        ret = JSON.parse(matches[1])
       }
     }
     res.json(ret)
@@ -62,51 +62,34 @@ apiRoutes.get('/lyric', (req,res) => {
     console.log(e)
   })
 })
-apiRoutes.get('/getGameItems', (req,res) => {
-  var url = 'https://bocaidj.com/api/v507/app.php'
+
+apiRoutes.get('/lyric', function (req, res) {
+  var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+
   axios.get(url, {
     headers: {
-      origin: 'https://bocaidj.com',
-      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
+      referer: 'https://c.y.qq.com/',
+      host: 'c.y.qq.com'
     },
     params: req.query
   }).then((response) => {
-    res.json(response.data)
+    var ret = response.data
+    if (typeof ret === 'string') {
+      var reg = /^\w+\(({.+})\)$/
+      console.log(+new Date)
+      var matches = ret.match(reg)
+      console.log(+new Date)
+      if (matches) {
+        ret = JSON.parse(matches[1])
+      }
+    }
+    res.json(ret)
   }).catch((e) => {
     console.log(e)
   })
 })
-apiRoutes.get('/getGameBanner', (req,res) => {
-  var url = 'https://bocaidj.com/api/v507/app.php'
-  axios.get(url, {
-    headers: {
-      origin: 'https://bocaidj.com',
-      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
-    },
-    params: req.query
-  }).then((response) => {
-    res.json(response.data)
-  }).catch((e) => {
-    console.log(e)
-  })
-})
-apiRoutes.get('/getGameList', (req,res) => {
-  var url = 'https://bocaidj.com/api/v507/app.php'
-  axios.get(url, {
-    headers: {
-      origin: 'https://bocaidj.com',
-      referer: 'https://bocaidj.com/guess_pc/html/game/guess_index.html'
-    },
-    params: req.query
-  }).then((response) => {
-    res.json(response.data)
-  }).catch((e) => {
-    console.log(e)
-  })
-})
-app.use('/api',apiRoutes)
-// favicon
-app.use(favicon(__dirname + '/../favicon.ico'))
+
+app.use('/api', apiRoutes)
 
 var compiler = webpack(webpackConfig)
 
@@ -116,21 +99,22 @@ var devMiddleware = require('webpack-dev-middleware')(compiler, {
 })
 
 var hotMiddleware = require('webpack-hot-middleware')(compiler, {
-  log: () => {}
+  log: () => {
+  }
 })
 // force page reload when html-webpack-plugin template changes
 compiler.plugin('compilation', function (compilation) {
   compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
-    hotMiddleware.publish({ action: 'reload' })
+    hotMiddleware.publish({action: 'reload'})
     cb()
   })
 })
 
-// proxy fonts requests
+// proxy api requests
 Object.keys(proxyTable).forEach(function (context) {
   var options = proxyTable[context]
   if (typeof options === 'string') {
-    options = { target: options }
+    options = {target: options}
   }
   app.use(proxyMiddleware(options.filter || context, options))
 })
@@ -145,7 +129,7 @@ app.use(devMiddleware)
 // compilation error display
 app.use(hotMiddleware)
 
-// serve pure static common
+// serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 

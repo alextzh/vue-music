@@ -12,10 +12,8 @@
   import Singer from 'common/js/singer'
   import {mapMutations} from 'vuex'
   import {playlistMixin} from 'common/js/mixin'
-
-  const HOT_NAME = '热门'
   const HOT_SINGER_LEN = 10
-
+  const HOT_NAME = '热门'
   export default {
     mixins: [playlistMixin],
     data() {
@@ -54,12 +52,10 @@
         }
         list.forEach((item, index) => {
           if (index < HOT_SINGER_LEN) {
-            map.hot.items.push(
-              new Singer({
-                id: item.Fsinger_mid,
-                name: item.Fsinger_name
-              })
-            )
+            map.hot.items.push(new Singer({
+              name: item.Fsinger_name,
+              id: item.Fsinger_mid
+            }))
           }
           const key = item.Findex
           if (!map[key]) {
@@ -68,16 +64,14 @@
               items: []
             }
           }
-          map[key].items.push(
-            new Singer({
-              id: item.Fsinger_mid,
-              name: item.Fsinger_name
-            })
-          )
+          map[key].items.push(new Singer({
+            name: item.Fsinger_name,
+            id: item.Fsinger_mid
+          }))
         })
         // 为了得到有序列表，我们需要处理 map
-        let hot = []
         let ret = []
+        let hot = []
         for (let key in map) {
           let val = map[key]
           if (val.title.match(/[a-zA-Z]/)) {

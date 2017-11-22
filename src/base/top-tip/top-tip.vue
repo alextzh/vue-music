@@ -7,7 +7,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-  export default{
+  export default {
+    props: {
+      delay: {
+        type: Number,
+        default: 2000
+      }
+    },
     data() {
       return {
         showFlag: false
@@ -19,7 +25,7 @@
         clearTimeout(this.timer)
         this.timer = setTimeout(() => {
           this.hide()
-        }, 2000)
+        }, this.delay)
       },
       hide() {
         this.showFlag = false

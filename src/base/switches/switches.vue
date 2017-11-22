@@ -1,13 +1,14 @@
 <template>
   <ul class="switches">
-    <li class="switch-item" v-for="(item, index) in switches" :class="{active: currentIndex === index}" @click="switchItem(index)">
-      <span>{{item.name}}</span>
+    <li class="switch-item" v-for="(item,index) in switches" :class="{'active':currentIndex === index}"
+        @click="switchItem(index)">
+      <span>{{item.name}} </span>
     </li>
   </ul>
 </template>
 
 <script type="text/ecmascript-6">
-  export default{
+  export default {
     props: {
       switches: {
         type: Array,

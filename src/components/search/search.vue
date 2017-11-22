@@ -3,8 +3,8 @@
     <div class="search-box-wrapper">
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" ref="shortcutWrapper" v-show="!query">
-      <scroll :refreshDelay="refreshDelay" class="shortcut" ref="shortcut" :data="shortcut">
+    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+      <scroll :refreshDelay="refreshDelay" ref="shortcut" class="shortcut" :data="shortcut">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -17,60 +17,55 @@
           <div class="search-history" v-show="searchHistory.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span class="clear" @click="showConfirm">
+              <span @click="showConfirm" class="clear">
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list :searches="searchHistory" @select="addQuery" @delete="deleteSearchHistory"></search-list>
+            <search-list @delete="deleteSearchHistory" @select="addQuery" :searches="searchHistory"></search-list>
           </div>
         </div>
       </scroll>
     </div>
-    <div class="search-result" ref="searchResult" v-show="query">
-      <suggest ref="suggest" :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
+    <div class="search-result" v-show="query" ref="searchResult">
+      <suggest @listScroll="blurInput" @select="saveSearch" ref="suggest" :query="query"></suggest>
     </div>
-    <confirm ref="confirm" text="是否清空搜索历史" confirmBtnText="清空" @confirm="clearSearchHistory"></confirm>
+    <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box'
-  import Suggest from 'components/suggest/suggest'
   import SearchList from 'base/search-list/search-list'
-  import Confirm from 'base/confirm/confirm'
   import Scroll from 'base/scroll/scroll'
+  import Confirm from 'base/confirm/confirm'
+  import Suggest from 'components/suggest/suggest'
   import {getHotKey} from 'api/search'
   import {ERR_OK} from 'api/config'
-  import {mapActions, mapGetters} from 'vuex'
   import {playlistMixin, searchMixin} from 'common/js/mixin'
-
+  import {mapActions} from 'vuex'
   export default {
     mixins: [playlistMixin, searchMixin],
     data() {
       return {
-        hotKey: [],
-        refreshDelay: 100
+        hotKey: []
+      }
+    },
+    computed: {
+      shortcut() {
+        return this.hotKey.concat(this.searchHistory)
       }
     },
     created() {
       this._getHotKey()
     },
-    computed: {
-      shortcut() {
-        return this.hotKey.concat(this.searchHistory)
-      },
-      ...mapGetters([
-        'searchHistory'
-      ])
-    },
     methods: {
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
-        this.$refs.shortcutWrapper.style.bottom = bottom
-        this.$refs.shortcut.refresh()
         this.$refs.searchResult.style.bottom = bottom
         this.$refs.suggest.refresh()
+        this.$refs.shortcutWrapper.style.bottom = bottom
+        this.$refs.shortcut.refresh()
       },
       showConfirm() {
         this.$refs.confirm.show()
@@ -97,15 +92,15 @@
     },
     components: {
       SearchBox,
-      Suggest,
       SearchList,
+      Scroll,
       Confirm,
-      Scroll
+      Suggest
     }
   }
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
   .search

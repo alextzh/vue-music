@@ -19,7 +19,6 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
-
   .no-result
     text-align: center
     .no-result-icon
@@ -31,5 +30,5 @@
     .no-result-text
       margin-top: 30px
       font-size: $font-size-medium
-      color: #999
+      color: $color-text-d
 </style>

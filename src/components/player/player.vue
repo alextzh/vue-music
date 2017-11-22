@@ -1,5 +1,5 @@
 <template>
-  <div class="player" v-show="playlist.length > 0">
+  <div class="player" v-show="playlist.length>0">
     <transition name="normal"
                 @enter="enter"
                 @after-enter="afterEnter"
@@ -35,7 +35,10 @@
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
-                <p class="text" ref="lyricLine" :class="{'current': currentLineNum === index}" v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+                <p ref="lyricLine"
+                   class="text"
+                   :class="{'current': currentLineNum ===index}"
+                   v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
               </div>
               <div class="pure-music" v-show="isPureMusic">
                 <p>{{pureMusicLyric}}</p>
@@ -45,13 +48,14 @@
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot" :class="{'active': currentShow === 'cd'}"></span>
-            <span class="dot" :class="{'active': currentShow === 'lyric'}"></span>
+            <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange" @percentChanging="onProgressBarChanging"></progress-bar>
+              <progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange"
+                            @percentChanging="onProgressBarChanging"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -79,7 +83,7 @@
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
           <div class="imgWrapper" ref="miniWrapper">
-            <img ref="miniImage" width="40" height="40" :src="currentSong.image" :class="cdCls">
+            <img ref="miniImage" :class="cdCls" width="40" height="40" :src="currentSong.image">
           </div>
         </div>
         <div class="text">
@@ -87,8 +91,8 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <progress-circle :percent="percent" :radius="radius">
-            <i class="icon-mini" @click.stop="togglePlaying" :class="miniIcon"></i>
+          <progress-circle :radius="radius" :percent="percent">
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
         <div class="control" @click.stop="showPlaylist">
@@ -97,26 +101,25 @@
       </div>
     </transition>
     <playlist ref="playlist"></playlist>
-    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end" @pause="paused"></audio>
+    <audio ref="audio" @play="ready" @error="error" @timeupdate="updateTime"
+           @ended="end" @pause="paused"></audio>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters, mapMutations, mapActions} from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import animations from 'create-keyframe-animation'
-  import {prefixStyle} from 'common/js/dom'
+  import { prefixStyle } from 'common/js/dom'
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
-  import {playMode} from 'common/js/config'
+  import { playMode } from 'common/js/config'
   import Lyric from 'lyric-parser'
   import Scroll from 'base/scroll/scroll'
+  import { playerMixin } from 'common/js/mixin'
   import Playlist from 'components/playlist/playlist'
-  import {playerMixin} from 'common/js/mixin'
-
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
   const timeExp = /\[(\d{2}):(\d{2}):(\d{2})]/g
-
   export default {
     mixins: [playerMixin],
     data() {
@@ -149,9 +152,9 @@
         return this.currentTime / this.currentSong.duration
       },
       ...mapGetters([
+        'currentIndex',
         'fullScreen',
-        'playing',
-        'currentIndex'
+        'playing'
       ])
     },
     created() {
@@ -247,7 +250,6 @@
             this.togglePlaying()
           }
         }
-        this.songReady = false
       },
       prev() {
         if (!this.songReady) {
@@ -266,10 +268,12 @@
             this.togglePlaying()
           }
         }
-        this.songReady = false
       },
       ready() {
-        this.songReady = true
+        // 延时避免快速切换歌曲导致 DOM 会报错
+        setTimeout(() => {
+          this.songReady = true
+        }, 500)
         this.savePlayHistory(this.currentSong)
         // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
         if (this.currentLyric && !this.isPureMusic) {
@@ -303,25 +307,20 @@
       onProgressBarChange(percent) {
         const currentTime = this.currentSong.duration * percent
         this.currentTime = this.$refs.audio.currentTime = currentTime
-        if (!this.playing) {
-          this.togglePlaying()
-        }
         if (this.currentLyric) {
           this.currentLyric.seek(currentTime * 1000)
+        }
+        if (!this.playing) {
+          this.togglePlaying()
         }
       },
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
-          if (lyric === -1901) {
-            this.isPureMusic = true
-            this.playingLyric = this.pureMusicLyric = '未找到歌词'
-            return
-          }
           if (this.currentSong.lyric !== lyric) {
             return
           }
           this.currentLyric = new Lyric(lyric, this.handleLyric)
-          this.isPureMusic = this.currentLyric.lines.length === 0
+          this.isPureMusic = !this.currentLyric.lines.length
           if (this.isPureMusic) {
             this.pureMusicLyric = this.currentLyric.lrc.replace(timeExp, '').trim()
             this.playingLyric = this.pureMusicLyric
@@ -375,9 +374,9 @@
           this.touch.moved = true
         }
         const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
-        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, deltaX + left))
+        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
         this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
-        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
         this.$refs.lyricList.$el.style[transitionDuration] = 0
         this.$refs.middleL.style.opacity = 1 - this.touch.percent
         this.$refs.middleL.style[transitionDuration] = 0
@@ -400,8 +399,8 @@
         } else {
           if (this.touch.percent < 0.9) {
             offsetWidth = 0
-            opacity = 1
             this.currentShow = 'cd'
+            opacity = 1
           } else {
             offsetWidth = -window.innerWidth
             opacity = 0
@@ -461,7 +460,7 @@
     },
     watch: {
       currentSong(newSong, oldSong) {
-        if (!newSong.id || newSong.id === oldSong.id) {
+        if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
           return
         }
         this.songReady = false
@@ -470,14 +469,12 @@
           // 重置为null
           this.currentLyric = null
           this.currentTime = 0
-          this.currentLineNum = 0
           this.playingLyric = ''
+          this.currentLineNum = 0
         }
-        clearTimeout(this.timer)
-        this.timer = setTimeout(() => {
-          this.$refs.audio.play()
-          this.getLyric()
-        }, 1000)
+        this.$refs.audio.src = newSong.url
+        this.$refs.audio.play()
+        this.getLyric()
       },
       playing(newPlaying) {
         if (!this.songReady) {
@@ -516,7 +513,6 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
-
   .player
     .normal-player
       position: fixed
@@ -581,8 +577,8 @@
             left: 10%
             top: 0
             width: 80%
-            height: 100%
             box-sizing: border-box
+            height: 100%
             .cd
               width: 100%
               height: 100%
@@ -594,8 +590,8 @@
                 width: 100%
                 height: 100%
                 box-sizing: border-box
-                border: 10px solid rgba(255, 255, 255, 0.1)
                 border-radius: 50%
+                border: 10px solid rgba(255, 255, 255, 0.1)
               .play
                 animation: rotate 20s linear infinite
           .playing-lyric-wrapper

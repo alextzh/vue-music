@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <ul>
-      <li @click="selectItem(song,index)" class="item" v-for="(song,index) in songs">
+      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs">
         <div class="rank" v-show="rank">
           <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
         </div>
@@ -27,11 +27,11 @@
       }
     },
     methods: {
-      getDesc(song) {
-        return `${song.singer}▪${song.album}`
-      },
       selectItem(item, index) {
         this.$emit('select', item, index)
+      },
+      getDesc(song) {
+        return `${song.singer}·${song.album}`
       },
       getRankCls(index) {
         if (index <= 2) {
@@ -52,7 +52,6 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
-
   .song-list
     .item
       display: flex

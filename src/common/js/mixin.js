@@ -1,6 +1,3 @@
-/**
- * Created by tianzhihong on 2017/7/7.
- */
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
@@ -23,11 +20,12 @@ export const playlistMixin = {
     }
   },
   methods: {
-    handlePlaylist(playlist) {
+    handlePlaylist() {
       throw new Error('component must implement handlePlaylist method')
     }
   }
 }
+
 export const playerMixin = {
   computed: {
     iconMode() {
@@ -35,9 +33,9 @@ export const playerMixin = {
     },
     ...mapGetters([
       'sequenceList',
-      'mode',
-      'currentSong',
       'playlist',
+      'currentSong',
+      'mode',
       'favoriteList'
     ])
   },
@@ -60,13 +58,6 @@ export const playerMixin = {
       })
       this.setCurrentIndex(index)
     },
-    getFavoriteIcon(song) {
-      if (this.isFavorite(song)) {
-        return 'icon-favorite'
-      } else {
-        return 'icon-not-favorite'
-      }
-    },
     toggleFavorite(song) {
       if (this.isFavorite(song)) {
         this.deleteFavoriteList(song)
@@ -74,16 +65,22 @@ export const playerMixin = {
         this.saveFavoriteList(song)
       }
     },
+    getFavoriteIcon(song) {
+      if (this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return 'icon-not-favorite'
+    },
     isFavorite(song) {
-      let index = this.favoriteList.findIndex((item) => {
+      const index = this.favoriteList.findIndex((item) => {
         return item.id === song.id
       })
       return index > -1
     },
     ...mapMutations({
+      setPlayMode: 'SET_PLAY_MODE',
       setPlaylist: 'SET_PLAYLIST',
       setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
     ...mapActions([
@@ -92,21 +89,29 @@ export const playerMixin = {
     ])
   }
 }
+
 export const searchMixin = {
   data() {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 120
     }
   },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
   methods: {
-    addQuery(query) {
-      this.$refs.searchBox.setQuery(query)
-    },
     onQueryChange(query) {
+      // 处理带空格的情况
       this.query = query.trim()
     },
     blurInput() {
       this.$refs.searchBox.blur()
+    },
+    addQuery(query) {
+      this.$refs.searchBox.setQuery(query)
     },
     saveSearch() {
       this.saveSearchHistory(this.query)

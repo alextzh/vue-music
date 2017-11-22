@@ -1,7 +1,3 @@
-/**
- * Created by tianzhihong on 2017/7/3.
- */
-
 export const singer = state => state.singer
 
 export const playing = state => state.playing
@@ -19,15 +15,6 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = (state) => {
   return state.playlist[state.currentIndex] || {}
 }
-export const navList = state => state.navList
-
-export const currentNew = state => state.currentNew
-
-export const activeIndex = state => state.activeIndex
-
-export const tag = state => state.tag
-
-export const newsDetail = state => state.newsDetail
 
 export const disc = state => state.disc
 

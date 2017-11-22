@@ -6,27 +6,10 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
-
   const DIRECTION_H = 'horizontal'
   const DIRECTION_V = 'vertical'
   export default {
     props: {
-      data: {
-        type: Array,
-        default: []
-      },
-      scrollbar: {
-        type: Object,
-        default: null
-      },
-      pullDownRefresh: {
-        type: Object,
-        default: null
-      },
-      pullUpLoad: {
-        type: Object,
-        default: null
-      },
       probeType: {
         type: Number,
         default: 1
@@ -38,6 +21,10 @@
       listenScroll: {
         type: Boolean,
         default: false
+      },
+      data: {
+        type: Array,
+        default: null
       },
       pullup: {
         type: Boolean,
@@ -66,16 +53,11 @@
         if (!this.$refs.wrapper) {
           return
         }
-        let options = {
+        this.scroll = new BScroll(this.$refs.wrapper, {
           probeType: this.probeType,
           click: this.click,
-          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
-          scrollbar: this.scrollbar,
-          scrollbarFade: this.scrollbarFade,
-          pullDownRefresh: this.pullDownRefresh ? {stop: 40} : false,
-          pullUpLoad: this.pullUpLoad
-        }
-        this.scroll = new BScroll(this.$refs.wrapper, options)
+          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
+        })
         if (this.listenScroll) {
           this.scroll.on('scroll', (pos) => {
             this.$emit('scroll', pos)
@@ -93,23 +75,12 @@
             this.$emit('beforeScroll')
           })
         }
-        if (this.pullDownRefresh) {
-          this.scroll.on('pullingDown', () => {
-            this.$emit('pullingDown')
-          })
-        }
-
-        if (this.pullUpLoad) {
-          this.scroll.on('pullingUp', () => {
-            this.$emit('pullingUp')
-          })
-        }
-      },
-      enable() {
-        this.scroll && this.scroll.enable()
       },
       disable() {
         this.scroll && this.scroll.disable()
+      },
+      enable() {
+        this.scroll && this.scroll.enable()
       },
       refresh() {
         this.scroll && this.scroll.refresh()
@@ -119,12 +90,6 @@
       },
       scrollToElement() {
         this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
-      },
-      finishPullDown() {
-        this.scroll && this.scroll.finishPullDown()
-      },
-      finishPullUp() {
-        this.scroll && this.scroll.finishPullUp()
       }
     },
     watch: {

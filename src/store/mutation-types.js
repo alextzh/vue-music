@@ -1,6 +1,3 @@
-/**
- * Created by tianzhihong on 2017/7/3.
- */
 export const SET_SINGER = 'SET_SINGER'
 
 export const SET_PLAYING_STATE = 'SET_PLAYING_STATE'
@@ -24,13 +21,3 @@ export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
 export const SET_PLAY_HISTORY = 'SET_PLAY_HISTORY'
 
 export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'
-
-export const SET_NAV_LIST = 'SET_NAV_LIST'
-
-export const SET_CURRENT_NEW = 'SET_CURRENT_NEW'
-
-export const SET_ACTIVE_INDEX = 'SET_ACTIVE_INDEX'
-
-export const SET_TAG = 'SET_TAG'
-
-export const SET_NEWS_DETAIL = 'SET_NEWS_DETAIL'

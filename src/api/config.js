@@ -1,6 +1,3 @@
-/**
- * Created by tianzhihong on 2017/6/28.
- */
 export const commonParams = {
   g_tk: 1928093487,
   inCharset: 'utf-8',
@@ -8,8 +5,10 @@ export const commonParams = {
   notice: 0,
   format: 'jsonp'
 }
+
 export const options = {
   param: 'jsonpCallback',
   prefix: 'jp'
 }
+
 export const ERR_OK = 0

@@ -1,6 +1,3 @@
-/**
- * Created by tianzhihong on 2017/7/3.
- */
 import * as types from './mutation-types'
 
 const mutations = {
@@ -39,21 +36,6 @@ const mutations = {
   },
   [types.SET_FAVORITE_LIST](state, list) {
     state.favoriteList = list
-  },
-  [types.SET_NAV_LIST](state, list) {
-    state.navList = list
-  },
-  [types.SET_CURRENT_NEW](state, list) {
-    state.currentNew = list
-  },
-  [types.SET_ACTIVE_INDEX](state, index) {
-    state.activeIndex = index
-  },
-  [types.SET_TAG](state, str) {
-    state.tag = str
-  },
-  [types.SET_NEWS_DETAIL](state, list) {
-    state.newsDetail = list
   }
 }
 
