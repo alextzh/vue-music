@@ -274,6 +274,7 @@
         setTimeout(() => {
           this.songReady = true
         }, 500)
+        this.canLyricPlay = true
         this.savePlayHistory(this.currentSong)
         // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
         if (this.currentLyric && !this.isPureMusic) {
@@ -325,7 +326,7 @@
             this.pureMusicLyric = this.currentLyric.lrc.replace(timeExp, '').trim()
             this.playingLyric = this.pureMusicLyric
           } else {
-            if (this.playing && this.songReady) {
+            if (this.playing && this.canLyricPlay) {
               // 这个时候有可能用户已经播放了歌曲，要切到对应位置
               this.currentLyric.seek(this.currentTime * 1000)
             }
@@ -464,6 +465,7 @@
           return
         }
         this.songReady = false
+        this.canLyricPlay = false
         if (this.currentLyric) {
           this.currentLyric.stop()
           // 重置为null
