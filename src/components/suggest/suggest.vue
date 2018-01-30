@@ -8,7 +8,7 @@
           @beforeScroll="listScroll"
   >
     <ul class="suggest-list">
-      <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
+      <li @click="selectItem(item)" class="suggest-item" v-for="(item, index) in result" v-bind:key="index">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -28,13 +28,15 @@
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
   import NoResult from 'base/no-result/no-result'
-  import {search} from 'api/search'
-  import {ERR_OK} from 'api/config'
-  import {createSong} from 'common/js/song'
-  import {mapMutations, mapActions} from 'vuex'
+  import { search } from 'api/search'
+  import { ERR_OK } from 'api/config'
+  import { createSong, isValidMusic } from 'common/js/song'
+  import { mapMutations, mapActions } from 'vuex'
   import Singer from 'common/js/singer'
+
   const TYPE_SINGER = 'singer'
   const perpage = 20
+
   export default {
     props: {
       showSinger: {
@@ -116,7 +118,7 @@
       },
       _genResult(data) {
         let ret = []
-        if (data.zhida && data.zhida.singerid) {
+        if (data.zhida && data.zhida.singerid && this.page === 1) {
           ret.push({...data.zhida, ...{type: TYPE_SINGER}})
         }
         if (data.song) {
@@ -127,7 +129,7 @@
       _normalizeSongs(list) {
         let ret = []
         list.forEach((musicData) => {
-          if (musicData.songid && musicData.albummid) {
+          if (isValidMusic(musicData)) {
             ret.push(createSong(musicData))
           }
         })
@@ -165,6 +167,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+  
   .suggest
     height: 100%
     overflow: hidden

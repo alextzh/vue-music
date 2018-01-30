@@ -19,9 +19,12 @@ Vue.use(VueLazyload, {
 })
 
 /* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  render: h => h(App)
-})
+document.addEventListener('deviceready', function() {
+  new Vue({
+    el: '#app',
+    router,
+    store,
+    render: h => h(App)
+  })
+  window.navigator.splashscreen.hide()
+}, false)

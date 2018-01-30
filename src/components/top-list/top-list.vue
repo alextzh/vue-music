@@ -6,10 +6,11 @@
 
 <script type="text/ecmascript-6">
   import MusicList from 'components/music-list/music-list'
-  import {getMusicList} from 'api/rank'
-  import {ERR_OK} from 'api/config'
-  import {mapGetters} from 'vuex'
-  import {createSong} from 'common/js/song'
+  import { getMusicList } from 'api/rank'
+  import { ERR_OK } from 'api/config'
+  import { mapGetters } from 'vuex'
+  import { createSong, isValidMusic } from 'common/js/song'
+
   export default {
     computed: {
       title() {
@@ -50,7 +51,7 @@
         let ret = []
         list.forEach((item) => {
           const musicData = item.data
-          if (musicData.songid && musicData.albummid) {
+          if (isValidMusic(musicData)) {
             ret.push(createSong(musicData))
           }
         })
@@ -66,6 +67,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   .slide-enter-active, .slide-leave-active
     transition: all 0.3s ease
+
   .slide-enter, .slide-leave-to
     transform: translate3d(100%, 0, 0)
 </style>

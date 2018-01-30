@@ -47,6 +47,7 @@
   import Confirm from 'base/confirm/confirm'
   import AddSong from 'components/add-song/add-song'
   import {playerMixin} from 'common/js/mixin'
+
   export default {
     mixins: [playerMixin],
     data() {
@@ -141,6 +142,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+  
   .playlist
     position: fixed
     left: 0

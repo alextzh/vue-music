@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <ul>
-      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs">
+      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs" v-bind:key="index">
         <div class="rank" v-show="rank">
           <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
         </div>
@@ -52,6 +52,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+  
   .song-list
     .item
       display: flex

@@ -8,6 +8,7 @@
 
 <script type="text/ecmascript-6">
   import {debounce} from 'common/js/util'
+
   export default {
     props: {
       placeholder: {
@@ -41,6 +42,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
+  
   .search-box
     display: flex
     align-items: center

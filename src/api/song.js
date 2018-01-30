@@ -41,6 +41,6 @@ export function getVKey(songmid, filename) {
   })
 
   return jsonp(url, data, Object.assign({}, options, {
-    param: 'callback',
+    param: 'callback'
   }))
 }

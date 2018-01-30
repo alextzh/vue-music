@@ -9,7 +9,8 @@
   import {getSongList} from 'api/recommend'
   import {ERR_OK} from 'api/config'
   import {mapGetters} from 'vuex'
-  import {createSong} from 'common/js/song'
+  import {createSong, isValidMusic} from 'common/js/song'
+
   export default {
     computed: {
       title() {
@@ -45,7 +46,7 @@
       _normalizeSongs(list) {
         let ret = []
         list.forEach((musicData) => {
-          if (musicData.songid && musicData.albummid) {
+          if (isValidMusic(musicData)) {
             ret.push(createSong(musicData))
           }
         })

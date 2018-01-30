@@ -1,6 +1,6 @@
 <template>
   <ul class="switches">
-    <li class="switch-item" v-for="(item,index) in switches" :class="{'active':currentIndex === index}"
+    <li class="switch-item" v-for="(item,index) in switches" v-bind:key="index" :class="{'active':currentIndex === index}"
         @click="switchItem(index)">
       <span>{{item.name}} </span>
     </li>
@@ -29,6 +29,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
+  
   .switches
     display: flex
     align-items: center

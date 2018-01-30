@@ -36,6 +36,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
+  
   .top-tip
     position: fixed
     top: 0

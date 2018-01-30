@@ -2,12 +2,12 @@
   <div class="rank" ref="rank">
     <scroll :data="topList" class="toplist" ref="toplist">
       <ul>
-        <li @click="selectItem(item)" class="item" v-for="item in topList">
+        <li @click="selectItem(item)" class="item" v-for="(item, index) in topList" v-bind:key="index">
           <div class="icon">
             <img width="100" height="100" v-lazy="item.picUrl"/>
           </div>
           <ul class="songlist">
-            <li class="song" v-for="(song,index) in item.songList">
+            <li class="song" v-for="(song, index) in item.songList" v-bind:key="index">
               <span>{{index + 1}}</span>
               <span>{{song.songname}}-{{song.singername}}</span>
             </li>
@@ -29,6 +29,7 @@
   import {ERR_OK} from 'api/config'
   import {playlistMixin} from 'common/js/mixin'
   import {mapMutations} from 'vuex'
+
   export default {
     mixins: [playlistMixin],
     created() {
@@ -79,6 +80,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+  
   .rank
     position: fixed
     width: 100%

@@ -6,8 +6,10 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
+
   const DIRECTION_H = 'horizontal'
   const DIRECTION_V = 'vertical'
+  
   export default {
     props: {
       probeType: {

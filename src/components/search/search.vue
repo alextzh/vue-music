@@ -9,7 +9,7 @@
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
             <ul>
-              <li @click="addQuery(item.k)" class="item" v-for="item in hotKey">
+              <li @click="addQuery(item.k)" class="item" v-for="(item, index) in hotKey" v-bind:key="index">
                 <span>{{item.k}}</span>
               </li>
             </ul>
@@ -44,6 +44,7 @@
   import {ERR_OK} from 'api/config'
   import {playlistMixin, searchMixin} from 'common/js/mixin'
   import {mapActions} from 'vuex'
+
   export default {
     mixins: [playlistMixin, searchMixin],
     data() {
@@ -62,8 +63,10 @@
     methods: {
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
+
         this.$refs.searchResult.style.bottom = bottom
         this.$refs.suggest.refresh()
+        
         this.$refs.shortcutWrapper.style.bottom = bottom
         this.$refs.shortcut.refresh()
       },
@@ -103,6 +106,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+
   .search
     .search-box-wrapper
       margin: 20px

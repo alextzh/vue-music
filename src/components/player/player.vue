@@ -73,7 +73,7 @@
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>
+              <i @click="toggleFavorite(currentSong)" class="icon" :class="favoriteIcon"></i>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@
       </div>
     </transition>
     <playlist ref="playlist"></playlist>
-    <audio ref="audio" @play="ready" @error="error" @timeupdate="updateTime"
+    <audio ref="audio" @playing="ready" @error="error" @timeupdate="updateTime"
            @ended="end" @pause="paused"></audio>
   </div>
 </template>
@@ -117,9 +117,12 @@
   import Scroll from 'base/scroll/scroll'
   import { playerMixin } from 'common/js/mixin'
   import Playlist from 'components/playlist/playlist'
+
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
+
   const timeExp = /\[(\d{2}):(\d{2}):(\d{2})]/g
+
   export default {
     mixins: [playerMixin],
     data() {
@@ -169,6 +172,7 @@
       },
       enter(el, done) {
         const {x, y, scale} = this._getPosAndScale()
+
         let animation = {
           0: {
             transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
@@ -180,6 +184,7 @@
             transform: `translate3d(0,0,0) scale(1)`
           }
         }
+
         animations.registerAnimation({
           name: 'move',
           animation,
@@ -188,6 +193,7 @@
             easing: 'linear'
           }
         })
+
         animations.runAnimation(this.$refs.cdWrapper, 'move', done)
       },
       afterEnter() {
@@ -270,10 +276,9 @@
         }
       },
       ready() {
-        // 延时避免快速切换歌曲导致 DOM 会报错
-        setTimeout(() => {
-          this.songReady = true
-        }, 500)
+        clearTimeout(this.timer)
+        // 监听 playing 这个事件可以确保慢网速或者快速切换歌曲导致的 DOM Exception
+        this.songReady = true
         this.canLyricPlay = true
         this.savePlayHistory(this.currentSong)
         // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
@@ -288,6 +293,7 @@
         }
       },
       error() {
+        clearTimeout(this.timer)
         this.songReady = true
       },
       updateTime(e) {
@@ -476,6 +482,11 @@
         }
         this.$refs.audio.src = newSong.url
         this.$refs.audio.play()
+        // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
+        clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
+          this.songReady = true
+        }, 5000)
         this.getLyric()
       },
       playing(newPlaying) {
@@ -515,6 +526,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+
   .player
     .normal-player
       position: fixed
@@ -752,6 +764,7 @@
           position: absolute
           left: 0
           top: 0
+
   @keyframes rotate
     0%
       transform: rotate(0)

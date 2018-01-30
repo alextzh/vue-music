@@ -15,8 +15,10 @@
 
 <script type="text/ecmascript-6">
   import {prefixStyle} from 'common/js/dom'
+  
   const progressBtnWidth = 16
   const transform = prefixStyle('transform')
+
   export default {
     props: {
       percent: {

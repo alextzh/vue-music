@@ -33,9 +33,11 @@
   import {prefixStyle} from 'common/js/dom'
   import {playlistMixin} from 'common/js/mixin'
   import {mapActions} from 'vuex'
+
   const RESERVED_HEIGHT = 40
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
+
   export default {
     mixins: [playlistMixin],
     props: {
@@ -116,6 +118,7 @@
         } else {
           blur = Math.min(20, percent * 20)
         }
+        
         this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
         this.$refs.filter.style[backdrop] = `blur(${blur}px)`
         if (newVal < this.minTransalteY) {
@@ -143,6 +146,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+
   .music-list
     position: fixed
     z-index: 100

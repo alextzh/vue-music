@@ -51,6 +51,7 @@
   import {searchMixin} from 'common/js/mixin'
   import {mapGetters, mapActions} from 'vuex'
   import Song from 'common/js/song'
+
   export default {
     mixins: [searchMixin],
     data() {
@@ -130,6 +131,7 @@
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
+  
   .add-song
     position: fixed
     top: 0
